@@ -3,12 +3,14 @@ import subprocess
 from pathlib import Path
 import tempfile
 import shutil
+import asyncio
 
 NI_PATH = Path('/usr/lib/x86_64-linux-gnu/gnome-inform7/ni')
 INFORM6_PATH = Path('/usr/lib/x86_64-linux-gnu/gnome-inform7/inform6')
 INFORM7_HOME = Path('/usr/share/gnome-inform7')
 PROJECT_TEMPLATE_PATH = Path('/root/project.inform')
 
+@asyncio.coroutine
 def compilei7(story, output):
     story_path = Path(story)
     output_path = Path(output)
@@ -24,4 +26,5 @@ def compilei7(story, output):
         shutil.copyfile(str(project_path / 'Build/output.ulx'), str(output_path))
 
 if __name__ == '__main__':
-    compilei7('/root/story.ni', '/root/output.ulx')
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(compilei7('/root/story.ni', '/root/output.ulx'))
