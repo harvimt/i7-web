@@ -1,9 +1,9 @@
 #!/usr/bin/python3.4
-import subprocess
 from pathlib import Path
 import tempfile
 import shutil
 import asyncio
+from asyncio.subprocess import PIPE, STDOUT
 
 NI_PATH = Path('/usr/lib/x86_64-linux-gnu/gnome-inform7/ni')
 INFORM6_PATH = Path('/usr/lib/x86_64-linux-gnu/gnome-inform7/inform6')
@@ -34,8 +34,15 @@ def compilei7(story, output):
         ni_args = list(map(str, ni_args))
         i6_args = list(map(str, i6_args))
 
-        print(subprocess.check_output(ni_args).decode('utf8'))
-        print(subprocess.check_output(i6_args).decode('utf8'))
+        ni_proc = yield from asyncio.create_subprocess_exec(
+            *ni_args, stdout=PIPE, stderr=PIPE)
+        ni_out, ni_err = yield from ni_proc.communicate()
+        print(ni_out.decode('utf8'))
+
+        i6_proc = yield from asyncio.create_subprocess_exec(
+            *i6_args, stdout=PIPE, stderr=PIPE)
+        i6_out, i6_err = yield from i6_proc.communicate()
+        print(i6_out.decode('utf8'))
 
         shutil.copyfile(
             str(project_path / 'Build/output.ulx'), str(output_path))
