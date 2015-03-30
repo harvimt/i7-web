@@ -10,8 +10,6 @@ RUN rm gnome-inform7_6L38-0ubuntu1_amd64.deb
 RUN apt-get remove -y curl
 
 COPY generic_project.inform /root/project.inform
-COPY run.sh /run.sh
-RUN chmod +x /run.sh
-VOLUME /root/project.inform/Source/story.ni
-VOLUME /root/project.inform/Build
-CMD /run.sh
+COPY run.py /run.py
+RUN chmod +x /run.py
+CMD python3.4 /run.py
